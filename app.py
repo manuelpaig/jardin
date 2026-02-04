@@ -5,7 +5,7 @@ from PIL import Image, ImageOps
 
 st.set_page_config(page_title="Mi Jardín Botánico", page_icon="🌿")
 
-# LISTA TOTALMENTE REORGANIZADA (ID 15 AHORA ES ARAUCARIA)
+# LISTA ACTUALIZADA: 32 AHORA ES AGROPYRON
 plantas = [
     {"id": "1", "comun": "Níspero", "extra": "Fruto: Pomo. Hoja: Perenne rugosa"},
     {"id": "2", "comun": "Olivo", "extra": "Fruto: Aceituna. Hoja: Elíptica"},
@@ -38,7 +38,7 @@ plantas = [
     {"id": "29", "comun": "Romero", "extra": "Arbusto aromático lineal"},
     {"id": "30", "comun": "Diente de león", "extra": "Inflorescencia amarilla"},
     {"id": "31", "comun": "Árbol del cielo", "extra": "Hoja compuesta muy larga"},
-    {"id": "32", "comun": "Aligustre", "extra": "Hoja opuesta brillante"},
+    {"id": "32", "comun": "Agropyron", "extra": "Gramínea. Inflorescencia en espiga"},
     {"id": "33", "comun": "Trébol", "extra": "Hoja trifoliada. Leguminosa"}
 ]
 
