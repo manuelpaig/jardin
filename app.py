@@ -4,7 +4,7 @@ from PIL import Image, ImageOps
 
 st.set_page_config(page_title="Herbario 33", page_icon="🌿")
 
-# LISTA DEFINITIVA 1-33
+# LISTA 1-33 (Fragmentada para evitar cortes)
 p_list = [
     {"id":"1","c":"Níspero","t":"Angiosperma","f":"Pomo"},
     {"id":"2","c":"Olivo","t":"Angiosperma","f":"Drupa"},
@@ -47,36 +47,38 @@ def limpiar(t):
     t = t.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u")
     return t
 
-# Inicialización segura
 if 'pts' not in st.session_state:
     st.session_state.update({'pts':0,'idx':0,'r':False,'l':p_list.copy(),'ur':'','li':-1})
     random.shuffle(st.session_state.l)
 
 if st.session_state.idx < len(st.session_state.l):
     item = st.session_state.l[st.session_state.idx]
-    st.title("🌿 Herbario 33")
-    st.write(f"Planta {st.session_state.idx + 1}/33 | Puntos: {st.session_state.pts}")
+    st.title("Herbario 33")
+    st.write("Planta: " + str(st.session_state.idx + 1) + " / 33")
+    st.write("Puntos: " + str(st.session_state.pts))
 
-    img_path = f"{item['id']}.jpg.jpg"
+    img_path = item['id'] + ".jpg.jpg"
     if os.path.exists(img_path):
-        st.image(ImageOps.exif_transpose(Image.open(img_path)), use_container_width=True)
-    else: st.error(f"Falta: {img_path}")
+        img = Image.open(img_path)
+        st.image(ImageOps.exif_transpose(img), use_container_width=True)
+    else:
+        st.error("Falta imagen: " + img_path)
 
-    # El formulario limpia el campo de texto al enviar
-    with st.form("quiz", clear_on_submit=True):
-        txt = st.text_input("¿Qué planta es?").strip().lower()
+    with st.form("f", clear_on_submit=True):
+        txt = st.text_input("Nombre común:").strip().lower()
         if st.form_submit_button("Validar"):
             st.session_state.ur = txt
             st.session_state.r = True
 
-    # Solo comparamos si el usuario ha pulsado Validar
     if st.session_state.r:
         if limpiar(st.session_state.ur) == limpiar(item['c']):
-            st.success(f"✅ ¡Correcto! Es {item['c']}")
+            st.success("Correcto: " + item['c'])
             if st.session_state.li != st.session_state.idx:
                 st.session_state.pts += 1
                 st.session_state.li = st.session_state.idx
         else:
-            st.error(f"❌ Incorrecto. Es {item['c']}")
+            st.error("Incorrecto. Es: " + item['c'])
         
-        st.info(f"🧬 **
+        st.write("---")
+        st.write("Tipo: " + item['t'])
+        st.write("Fruto: " + item['
