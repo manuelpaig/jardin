@@ -4,7 +4,7 @@ from PIL import Image, ImageOps
 
 st.set_page_config(page_title="Herbario Botánico", page_icon="🌿")
 
-# BASE DE DATOS ACTUALIZADA (1-33)
+# BASE DE DATOS ACTUALIZADA (1-33) - 12 AHORA ES ARÁNDANO AZUL
 p_list = [
     {"id":"1","c":"Níspero","t":"Angiosperma","f":"Pomo"},
     {"id":"2","c":"Olivo","t":"Angiosperma","f":"Drupa (Aceituna)"},
@@ -17,7 +17,7 @@ p_list = [
     {"id":"9","c":"Geranio","t":"Angiosperma","f":"Esquizocarpo"},
     {"id":"10","c":"Agave","t":"Angiosperma","f":"Cápsula. Suculenta"},
     {"id":"11","c":"Flor de Pascua","t":"Angiosperma","f":"Ciatio (brácteas rojas)"},
-    {"id":"12","c":"Araucaria","t":"Gimnosperma","f":"Cono (Piña)"},
+    {"id":"12","c":"Arándano azul","t":"Angiosperma","f":"Baya"},
     {"id":"13","c":"Pino","t":"Gimnosperma","f":"Cono (Piña)"},
     {"id":"14","c":"Araucaria","t":"Gimnosperma","f":"Cono. Pino de Norfolk"},
     {"id":"15","c":"Araucaria","t":"Gimnosperma","f":"Cono. Tercer ejemplar"},
@@ -62,25 +62,4 @@ if st.session_state.idx < len(st.session_state.l):
             st.session_state.r = True
 
     if st.session_state.r:
-        def cl(t): return t.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u")
-        if cl(st.session_state.ultima_rta) == cl(item['c'].lower()):
-            st.success(f"✅ ¡Correcto! Es {item['c']}")
-            if 'last_idx_pts' not in st.session_state or st.session_state.last_idx_pts != st.session_state.idx:
-                st.session_state.pts += 1
-                st.session_state.last_idx_pts = st.session_state.idx
-        else:
-            st.error(f"❌ Incorrecto. Es {item['c']}")
-        
-        st.info(f"🧬 **Tipo:** {item['t']}  \n🍎 **Fruto/Detalle:** {item['f']}")
-
-        if st.button("Siguiente Planta ➡️"):
-            st.session_state.r = False
-            st.session_state.idx += 1
-            st.rerun()
-else:
-    st.balloons()
-    st.success(f"🏆 ¡Finalizado! Puntos totales: {st.session_state.pts}/33")
-    if st.button("Reiniciar"):
-        st.session_state.update({'pts': 0, 'idx': 0, 'r': False, 'ultima_rta': ''})
-        random.shuffle(st.session_state.l)
-        st.rerun()
+        def cl(t): return t.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("
