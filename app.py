@@ -3,7 +3,7 @@ import random
 import os
 from PIL import Image, ImageOps
 
-st.set_page_config(page_title="Botánica Quiz", layout="centered")
+st.set_page_config(page_title="Quiz Botánico Pro", layout="centered")
 
 # BASE DE DATOS ACTUALIZADA Y CORREGIDA
 p_list = [
@@ -12,7 +12,7 @@ p_list = [
     {"id":"3","n":"Drago","s":"Dracaena draco","t":"Angiosperma","f":"Baya"},
     {"id":"4","n":"Yuca / Cereus","s":"Yuca / Cereus hexagonus","t":"Angiosperma","f":"Cápsula"},
     {"id":"5","n":"Naranjo","s":"Citrus sinensis","t":"Angiosperma","f":"Hesperidio"},
-    {"id":"6","c":"Cítrico","s":"Citrus sp.","t":"Angiosperma","f":"Hesperidio"},
+    {"id":"6","n":"Cítrico","s":"Citrus sp.","t":"Angiosperma","f":"Hesperidio"},
     {"id":"7","n":"Falso maguey","s":"Furcraea foetida","t":"Angiosperma","f":"Cápsula"},
     {"id":"8","n":"Aspidistra","s":"Aspidistra elatior","t":"Angiosperma","f":"Baya"},
     {"id":"9","n":"Geranio","s":"Pelargonium sp.","t":"Angiosperma","f":"Esquizocarpo"},
@@ -42,69 +42,87 @@ p_list = [
     {"id":"33","n":"Trébol","s":"Trifolium sp.","t":"Angiosperma","f":"Legumbre"}
 ]
 
-# Inicialización
+# Inicialización del estado
 if 'idx' not in st.session_state:
-    st.session_state.update({'pts':0,'idx':0,'l':p_list.copy(),'opts':[],'tipo_p':""})
+    st.session_state.update({'pts':0,'idx':0,'l':p_list.copy(),'opts':[],'tipo_p':"",'respondido':False})
     random.shuffle(st.session_state.l)
 
-def generar_opciones():
+def nueva_pregunta():
     item = st.session_state.l[st.session_state.idx]
-    # Elegimos aleatoriamente qué preguntar
-    st.session_state.tipo_p = random.choice(["Nombre","Científico","Tipo"])
+    st.session_state.tipo_p = random.choice(["Nombre Común","Nombre Científico","Tipo (Angio/Gimno)"])
     
-    if st.session_state.tipo_p == "Nombre":
+    if st.session_state.tipo_p == "Nombre Común":
         correcta = item['n']
-        otros = [p['n'] for p in p_list if p['n'] != correcta]
-    elif st.session_state.tipo_p == "Científico":
+        pool = list(set([p['n'] for p in p_list if p['n'] != correcta]))
+    elif st.session_state.tipo_p == "Nombre Científico":
         correcta = item['s']
-        otros = [p['s'] for p in p_list if p['s'] != correcta]
+        pool = list(set([p['s'] for p in p_list if p['s'] != correcta]))
     else:
         correcta = item['t']
-        otros = ["Gimnosperma" if correcta == "Angiosperma" else "Angiosperma"]
+        pool = ["Gimnosperma" if correcta == "Angiosperma" else "Angiosperma"]
     
-    opciones = random.sample(list(set(otros)), 3) + [correcta]
+    n_opciones = min(len(pool), 3)
+    opciones = random.sample(pool, n_opciones) + [correcta]
     random.shuffle(opciones)
     st.session_state.opts = opciones
+    st.session_state.respondido = False
 
 if not st.session_state.opts:
-    generar_opciones()
+    nueva_pregunta()
 
-# Pantalla de Juego
+# Interfaz de Usuario
 if st.session_state.idx < len(st.session_state.l):
     item = st.session_state.l[st.session_state.idx]
-    st.title("🌿 Quiz de Botánica")
-    st.subheader(f"Puntos: {st.session_state.pts} | Planta {st.session_state.idx + 1}/33")
+    st.title("🌿 Herbario Digital: El Quiz")
     
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        st.subheader(f"Planta {st.session_state.idx + 1} de 33")
+    with col2:
+        st.metric("Puntuación", st.session_state.pts)
+
     img_path = f"{item['id']}.jpg.jpg"
     if os.path.exists(img_path):
         st.image(ImageOps.exif_transpose(Image.open(img_path)), use_container_width=True)
 
-    st.write(f"### Pregunta: ¿Cuál es el **{st.session_state.tipo_p}** de esta planta?")
-    
-    # Botones A, B, C, D
-    cols = st.columns(2)
+    st.write(f"### Pregunta: ¿Cuál es el **{st.session_state.tipo_p}**?")
+
+    # Lógica de respuesta
     for i, opcion in enumerate(st.session_state.opts):
-        with cols[i % 2]:
-            if st.button(f"{chr(65+i)}) {opcion}", use_container_width=True):
-                # Validar
-                val = ""
-                if st.session_state.tipo_p == "Nombre": val = item['n']
-                elif st.session_state.tipo_p == "Científico": val = item['s']
-                else: val = item['t']
-                
-                if opcion == val:
-                    st.success("¡CORRECTO!")
-                    st.session_state.pts += 1
-                else:
-                    st.error(f"INCORRECTO. Era: {val}")
-                
-                st.info(f"Ficha: {item['n']} ({item['s']}) | {item['t']} | Fruto: {item['f']}")
-                st.session_state.idx += 1
-                st.session_state.opts = [] # Para generar nuevas en el siguiente loop
-                st.button("Siguiente Planta ➡️")
+        if st.button(f"{chr(65+i)}) {opcion}", use_container_width=True, disabled=st.session_state.respondido):
+            st.session_state.respondido = True
+            st.session_state.eleccion = opcion
+            
+            # Validar valor real
+            val = item['n'] if st.session_state.tipo_p == "Nombre Común" else (item['s'] if st.session_state.tipo_p == "Nombre Científico" else item['t'])
+            
+            if opcion == val:
+                st.session_state.pts += 1
+                st.toast("¡Correcto!", icon="✅")
+            else:
+                st.toast("Incorrecto", icon="❌")
+
+    if st.session_state.respondido:
+        val = item['n'] if st.session_state.tipo_p == "Nombre Común" else (item['s'] if st.session_state.tipo_p == "Nombre Científico" else item['t'])
+        if st.session_state.eleccion == val:
+            st.success(f"✅ ¡Correcto! Es {val}")
+        else:
+            st.error(f"❌ Incorrecto. La respuesta era: {val}")
+        
+        st.info(f"**FICHA TÉCNICA:**\n- **Nombre:** {item['n']}\n- **Científico:** {item['s']}\n- **Tipo:** {item['t']}\n- **Fruto:** {item['f']}")
+        
+        if st.button("Siguiente Planta ➡️"):
+            st.session_state.idx += 1
+            st.session_state.opts = []
+            st.rerun()
+
 else:
     st.balloons()
-    st.success(f"🏆 ¡Finalizado! Total: {st.session_state.pts}/33")
-    if st.button("Reiniciar"):
-        st.session_state.update({'pts':0,'idx':0,'opts':[]})
+    st.header("🏆 ¡Examen Completado!")
+    st.success(f"Tu puntuación final es: {st.session_state.pts} de 33")
+    if st.button("Reiniciar Quiz"):
+        st.session_state.idx = 0
+        st.session_state.pts = 0
+        st.session_state.opts = []
+        random.shuffle(st.session_state.l)
         st.rerun()
