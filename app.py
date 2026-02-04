@@ -4,7 +4,7 @@ from PIL import Image, ImageOps
 
 st.set_page_config(page_title="Herbario Botánico", page_icon="🌿")
 
-# BASE DE DATOS ACTUALIZADA (1-33) - 12 AHORA ES ARÁNDANO AZUL
+# BASE DE DATOS DEFINITIVA (1-33)
 p_list = [
     {"id":"1","c":"Níspero","t":"Angiosperma","f":"Pomo"},
     {"id":"2","c":"Olivo","t":"Angiosperma","f":"Drupa (Aceituna)"},
@@ -41,6 +41,14 @@ p_list = [
     {"id":"33","c":"Trébol","t":"Angiosperma","f":"Legumbre (Trifoliada)"}
 ]
 
+# Función de limpieza robusta
+def limpiar(t):
+    t = t.lower()
+    t = t.replace("á","a").replace("é","e")
+    t = t.replace("í","i").replace("ó","o")
+    t = t.replace("ú","u")
+    return t
+
 if 'pts' not in st.session_state:
     st.session_state.update({'pts': 0, 'idx': 0, 'r': False, 'l': p_list.copy(), 'ultima_rta': ''})
     random.shuffle(st.session_state.l)
@@ -62,4 +70,24 @@ if st.session_state.idx < len(st.session_state.l):
             st.session_state.r = True
 
     if st.session_state.r:
-        def cl(t): return t.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("
+        if limpiar(st.session_state.ultima_rta) == limpiar(item['c']):
+            st.success(f"✅ ¡Correcto! Es {item['c']}")
+            if 'last_idx_pts' not in st.session_state or st.session_state.last_idx_pts != st.session_state.idx:
+                st.session_state.pts += 1
+                st.session_state.last_idx_pts = st.session_state.idx
+        else:
+            st.error(f"❌ Incorrecto. Es {item['c']}")
+        
+        st.info(f"🧬 **Tipo:** {item['t']}  \n🍎 **Fruto/Detalle:** {item['f']}")
+
+        if st.button("Siguiente Planta ➡️"):
+            st.session_state.r = False
+            st.session_state.idx += 1
+            st.rerun()
+else:
+    st.balloons()
+    st.success(f"🏆 ¡Finalizado! Puntos totales: {st.session_state.pts}/33")
+    if st.button("Reiniciar"):
+        st.session_state.update({'pts': 0, 'idx': 0, 'r': False, 'ultima_rta': ''})
+        random.shuffle(st.session_state.l)
+        st.rerun()
