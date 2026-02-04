@@ -4,7 +4,7 @@ from PIL import Image, ImageOps
 
 st.set_page_config(page_title="Herbario Botánico", page_icon="🌿")
 
-# BASE DE DATOS COMPLETA Y CORREGIDA (1-33)
+# BASE DE DATOS ACTUALIZADA (1-33)
 p_list = [
     {"id":"1","c":"Níspero","t":"Angiosperma","f":"Pomo"},
     {"id":"2","c":"Olivo","t":"Angiosperma","f":"Drupa (Aceituna)"},
@@ -33,7 +33,7 @@ p_list = [
     {"id":"25","c":"Ficus caucho","t":"Angiosperma","f":"Sicono (Higo pequeño)"},
     {"id":"26","c":"Buganvilla","t":"Angiosperma","f":"Aquenio (brácteas)"},
     {"id":"27","c":"Potus","t":"Angiosperma","f":"Baya (en interior no florece)"},
-    {"id":"28","c":"Sansevieria","t":"Angiosperma","f":"Baya. Hoja vertical"},
+    {"id":"28","c":"Conchitas mandala","t":"Angiosperma","f":"Cápsula. Suculenta roseta"},
     {"id":"29","c":"Romero","t":"Angiosperma","f":"Tetraquenio. Aromática"},
     {"id":"30","c":"Diente de león","t":"Angiosperma","f":"Cipsela (Vilano)"},
     {"id":"31","c":"Naranjo","t":"Angiosperma","f":"Hesperidio (Ejemplar 3)"},
@@ -55,16 +55,27 @@ if st.session_state.idx < len(st.session_state.l):
         st.image(ImageOps.exif_transpose(Image.open(img_path)), use_container_width=True)
     else: st.error(f"Falta: {img_path}")
 
-    with st.form("quiz"):
+    # clear_on_submit=True vacía el campo de texto tras pulsar el botón
+    with st.form("quiz", clear_on_submit=True):
         txt = st.text_input("¿Qué planta es?").strip().lower()
-        if st.form_submit_button("Validar"):
+        sub = st.form_submit_button("Validar")
+        
+        if sub:
             st.session_state.r = True
-            def cl(t): return t.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u")
-            if cl(txt) == cl(item['c'].lower()):
+            st.session_state.ultima_rta = txt # Guardamos para comparar fuera del borrado
+
+    # Lógica de comprobación (usamos una variable temporal para la respuesta)
+    if st.session_state.r:
+        def cl(t): return t.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u")
+        if cl(st.session_state.ultima_rta) == cl(item['c'].lower()):
+            st.success(f"✅ ¡Correcto! Es {item['c']}")
+            if 'puntos_sumados' not in st.session_state or st.session_state.puntos_sumados != st.session_state.idx:
                 st.session_state.pts += 1
-                st.success(f"✅ ¡Correcto! Es {item['c']}")
-            else: st.error(f"❌ Incorrecto. Es {item['c']}")
-            st.info(f"🧬 **Tipo:** {item['t']}  \n🍎 **Fruto/Detalle:** {item['f']}")
+                st.session_state.puntos_sumados = st.session_state.idx
+        else:
+            st.error(f"❌ Incorrecto. Es {item['c']}")
+        
+        st.info(f"🧬 **Tipo:** {item['t']}  \n🍎 **Fruto/Detalle:** {item['f']}")
 
     if st.session_state.r and st.button("Siguiente ➡️"):
         st.session_state.idx += 1
