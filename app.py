@@ -2,44 +2,78 @@ import streamlit as st
 import random, os
 from PIL import Image, ImageOps
 
-st.set_page_config(page_title="Herbario", page_icon="🌿")
+st.set_page_config(page_title="Herbario Botánico", page_icon="🌿")
 
-# Lista compactada para evitar errores de pegado
-plantas = [
-    {"id":"1","comun":"Níspero","extra":"Fruto: Pomo. Hoja rugosa"},
-    {"id":"2","comun":"Olivo","extra":"Fruto: Aceituna. Hoja elíptica"},
-    {"id":"3","comun":"Drago","extra":"Savia roja. Hoja ensiforme"},
-    {"id":"4","comun":"Yuca","extra":"Hoja lisa sin espina terminal"},
-    {"id":"5","comun":"Naranjo","extra":"Fruto: Hesperidio (Naranja)"},
-    {"id":"6","comun":"Cítrico","extra":"Aromático con aceites esenciales"},
-    {"id":"7","comun":"Yuca de jardín","extra":"Hoja con espina terminal"},
-    {"id":"8","comun":"Aspidistra","extra":"Sombra, hojas anchas"},
-    {"id":"9","comun":"Geranio","extra":"Hoja circular lobulada"},
-    {"id":"10","comun":"Agave","extra":"Suculenta sin espinas laterales"},
-    {"id": "11", "comun": "Flor de Pascua", "extra": "Brácteas rojas"},
-    {"id": "12", "comun": "Araucaria", "extra": "Porte columnar"},
-    {"id": "13", "comun": "Pino", "extra": "Gimnosperma. Hojas de aguja"},
-    {"id": "14", "comun": "Araucaria", "extra": "Pino de Norfolk"},
-    {"id": "15", "comun": "Araucaria", "extra": "Tercer ejemplar"},
-    {"id":"16","comun":"Palmera abanico","extra":"Hoja palmada con hilos"},
-    {"id":"17","comun":"Maguey morado","extra":"Haz verde y envés púrpura"},
-    {"id":"18","comun":"Laurel","extra":"Hoja coriácea y aromática"},
-    {"id":"19","comun":"Aloe Vera","extra":"Medicinal. Hoja con dientes"},
-    {"id":"20","comun":"Naranjo","extra":"Segundo ejemplar"},
-    {"id":"21","comun":"Cica","extra":"Gimnosperma. Semillas desnudas"},
-    {"id":"22","comun":"Cinta","extra":"Hojas estoloníferas"},
-    {"id":"23","comun":"Costilla de Adán","extra":"Hojas con agujeros"},
-    {"id":"24","comun":"Maguey morado","extra":"Segundo ejemplar"},
-    {"id":"25","comun":"Ficus caucho","extra":"Hoja con látex blanco"},
-    {"id":"26","comun":"Buganvilla","extra":"Trepadora con brácteas"},
-    {"id":"27","comun":"Potus","extra":"Liana de interior"},
-    {"id":"28","comun":"Sansevieria","extra":"Hoja vertical rígida"},
-    {"id":"29","comun":"Romero","extra":"Arbusto aromático lineal"},
-    {"id":"30","comun":"Diente de león","extra":"Inflorescencia amarilla"},
-    {"id":"31","comun":"Árbol del cielo","extra":"Hoja pinnada muy larga"},
-    {"id": "32", "comun": "Grama", "extra": "Agropyron. Rastrera"},
-    {"id":"33","comun":"Trébol","extra":"Hoja trifoliada. Leguminosa"}
+# BASE DE DATOS COMPLETA (1-33)
+p_list = [
+    {"id":"1","c":"Níspero","t":"Angiosperma","f":"Pomo"},
+    {"id":"2","c":"Olivo","t":"Angiosperma","f":"Drupa (Aceituna)"},
+    {"id":"3","c":"Drago","t":"Angiosperma","f":"Baya. Savia roja"},
+    {"id":"4","c":"Yuca","t":"Angiosperma","f":"Cápsula. Hoja lisa"},
+    {"id":"5","c":"Naranjo","t":"Angiosperma","f":"Hesperidio"},
+    {"id":"6","c":"Cítrico","t":"Angiosperma","f":"Hesperidio (aceites)"},
+    {"id":"7","c":"Yuca de jardín","t":"Angiosperma","f":"Cápsula. Hoja con espina"},
+    {"id":"8","c":"Aspidistra","t":"Angiosperma","f":"Baya (flor a ras de suelo)"},
+    {"id":"9","c":"Geranio","t":"Angiosperma","f":"Esquizocarpo"},
+    {"id":"10","c":"Agave","t":"Angiosperma","f":"Cápsula. Suculenta"},
+    {"id":"11","c":"Flor de Pascua","t":"Angiosperma","f":"Ciatio (brácteas rojas)"},
+    {"id":"12","c":"Araucaria","t":"Gimnosperma","f":"Cono (Piña)"},
+    {"id":"13","c":"Pino","t":"Gimnosperma","f":"Cono (Piña)"},
+    {"id":"14","c":"Araucaria","t":"Gimnosperma","f":"Cono. Pino de Norfolk"},
+    {"id":"15","c":"Araucaria","t":"Gimnosperma","f":"Cono. Tercer ejemplar"},
+    {"id":"16","c":"Palmera abanico","t":"Angiosperma","f":"Drupa (hoja palmada)"},
+    {"id":"17","c":"Maguey morado","t":"Angiosperma","f":"Cápsula. Hoja bicolor"},
+    {"id":"18","c":"Laurel","t":"Angiosperma","f":"Baya (Drupa pequeña)"},
+    {"id":"19","c":"Aloe Vera","t":"Angiosperma","f":"Cápsula. Medicinal"},
+    {"id":"20","c":"Naranjo","t":"Angiosperma","f":"Hesperidio (Ejemplar 2)"},
+    {"id":"21","c":"Cica","t":"Gimnosperma","f":"Semillas desnudas (falso fruto)"},
+    {"id":"22","c":"Cinta","t":"Angiosperma","f":"Cápsula. Estolonífera"},
+    {"id":"23","c":"Costilla de Adán","t":"Angiosperma","f":"Baya compuesta (tóxica)"},
+    {"id":"24","c":"Maguey morado","t":"Angiosperma","f":"Cápsula (Ejemplar 2)"},
+    {"id":"25","c":"Ficus caucho","t":"Angiosperma","f":"Sicono (Higo pequeño)"},
+    {"id":"26","c":"Buganvilla","t":"Angiosperma","f":"Aquenio (brácteas)"},
+    {"id":"27","c":"Potus","t":"Angiosperma","f":"Baya (en interior no florece)"},
+    {"id":"28","c":"Sansevieria","t":"Angiosperma","f":"Baya. Hoja vertical"},
+    {"id":"29","c":"Romero","t":"Angiosperma","f":"Tetraquenio. Aromática"},
+    {"id":"30","c":"Diente de león","t":"Angiosperma","f":"Cipsela (Vilano)"},
+    {"id":"31","c":"Árbol del cielo","t":"Angiosperma","f":"Sámara (ala central)"},
+    {"id":"32","c":"Grama","t":"Angiosperma","f":"Cariópside (Gramínea)"},
+    {"id":"33","c":"Trébol","t":"Angiosperma","f":"Legumbre (Trifoliada)"}
 ]
 
-if 'puntos' not in st.session_state:
-    st.session_state.
+if 'pts' not in st.session_state:
+    st.session_state.update({'pts': 0, 'idx': 0, 'r': False, 'l': p_list.copy()})
+    random.shuffle(st.session_state.l)
+
+if st.session_state.idx < len(st.session_state.l):
+    item = st.session_state.l[st.session_state.idx]
+    st.title("🌿 Examen Botánico")
+    st.write(f"Planta {st.session_state.idx + 1}/33 | Puntos: {st.session_state.pts}")
+
+    img_path = f"{item['id']}.jpg.jpg"
+    if os.path.exists(img_path):
+        st.image(ImageOps.exif_transpose(Image.open(img_path)), use_container_width=True)
+    else: st.error(f"Falta: {img_path}")
+
+    with st.form("quiz"):
+        txt = st.text_input("¿Qué planta es?").strip().lower()
+        if st.form_submit_button("Validar"):
+            st.session_state.r = True
+            def cl(t): return t.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u")
+            if cl(txt) == cl(item['c'].lower()):
+                st.session_state.pts += 1
+                st.success(f"✅ ¡Correcto! Es {item['c']}")
+            else: st.error(f"❌ Incorrecto. Es {item['c']}")
+            st.info(f"🧬 **Tipo:** {item['t']}  \n🍎 **Fruto/Detalle:** {item['f']}")
+
+    if st.session_state.r and st.button("Siguiente ➡️"):
+        st.session_state.idx += 1
+        st.session_state.r = False
+        st.rerun()
+else:
+    st.balloons()
+    st.success(f"🏆 ¡Finalizado! {st.session_state.pts}/33")
+    if st.button("Reiniciar"):
+        st.session_state.update({'pts': 0, 'idx': 0, 'r': False})
+        random.shuffle(st.session_state.l)
+        st.rerun()
