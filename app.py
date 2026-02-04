@@ -53,7 +53,7 @@ st.title("🌿 Challenge Botánico")
 st.write(f"Puntos: **{st.session_state.puntos}**")
 
 # Mostrar imagen ajustada
-st.image(f"{p['id']}.jpg", use_container_width=True)
+st.image(f"{p['id']}.jpg.jpg", use_container_width=True)
 
 if modo == "cientifico":
     label = f"¿Nombre científico de: {p['comun']}?"
@@ -79,4 +79,5 @@ with st.form("quiz_form"):
 if st.button("Siguiente Planta ➡️"):
     st.session_state.pregunta = random.choice(plantas)
     st.session_state.modo = random.choice(["cientifico", "tipo"])
+
     st.rerun()
