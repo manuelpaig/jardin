@@ -3,10 +3,8 @@ import random
 import os
 from PIL import Image, ImageOps
 
-# Configuración inicial
 st.set_page_config(page_title="Quiz Botánico", layout="centered")
 
-# 1. BASE DE DATOS (Asegúrate de que los IDs coincidan con tus fotos)
 p_list = [
     {"id":"1","n":"Níspero","s":"Eriobotrya japonica","t":"Angiosperma","f":"Pomo"},
     {"id":"2","n":"Olivo","s":"Olea europaea","t":"Angiosperma","f":"Aceituna"},
@@ -43,7 +41,6 @@ p_list = [
     {"id":"33","n":"Trébol","s":"Trifolium sp.","t":"Angiosperma","f":"Legumbre"}
 ]
 
-# 2. INICIALIZACIÓN DEL ESTADO
 if 'lista' not in st.session_state:
     l_copy = p_list.copy()
     random.shuffle(l_copy)
@@ -53,12 +50,10 @@ if 'lista' not in st.session_state:
     st.session_state.opciones = []
     st.session_state.respondido = False
 
-# 3. LÓGICA DE PREGUNTAS
 def preparar_pregunta():
     planta = st.session_state.lista[st.session_state.indice]
     tipo = random.choice(["Nombre Común", "Nombre Científico", "Tipo"])
     st.session_state.pregunta_tipo = tipo
-    
     if tipo == "Nombre Común":
         correcta = planta['n']
         falsas = [p['n'] for p in p_list if p['n'] != correcta]
@@ -68,8 +63,6 @@ def preparar_pregunta():
     else:
         correcta = planta['t']
         falsas = ["Gimnosperma" if correcta == "Angiosperma" else "Angiosperma"]
-    
-    # Mezclar
     random.shuffle(falsas)
     finales = list(set(falsas[:3])) + [correcta]
     random.shuffle(finales)
@@ -79,43 +72,47 @@ def preparar_pregunta():
 if not st.session_state.opciones:
     preparar_pregunta()
 
-# 4. INTERFAZ
 if st.session_state.indice < len(st.session_state.lista):
     item = st.session_state.lista[st.session_state.indice]
+    st.title("Examen de Botánica")
+    st.write("Planta: " + str(st.session_state.indice + 1) + " / 33")
+    st.write("Puntos: " + str(st.session_state.puntos))
     
-    st.title("🌿 Examen de Botánica")
-    st.write(f"Planta **{st.session_state.indice + 1}** de 33 | Puntos: **{st.session_state.puntos}**")
-    
-    # Imagen
-    img_name = f"{item['id']}.jpg.jpg"
+    img_name = item['id'] + ".jpg.jpg"
     if os.path.exists(img_name):
         st.image(ImageOps.exif_transpose(Image.open(img_name)), use_container_width=True)
-    else:
-        st.warning(f"No se encuentra la imagen: {img_name}")
 
-    st.write(f"### Pregunta: ¿Cuál es el **{st.session_state.pregunta_tipo}**?")
+    st.write("### Pregunta: ¿Cuál es el " + st.session_state.pregunta_tipo + "?")
 
-    # Botones
     for opt in st.session_state.opciones:
         if st.button(opt, use_container_width=True, disabled=st.session_state.respondido):
             st.session_state.respondido = True
             st.session_state.ultimo_click = opt
-            
-            # Validar
             correcta = item['n'] if st.session_state.pregunta_tipo == "Nombre Común" else (item['s'] if st.session_state.pregunta_tipo == "Nombre Científico" else item['t'])
-            
             if opt == correcta:
                 st.session_state.puntos += 1
-                st.balloons()
             st.rerun()
 
-    # Feedback tras responder
     if st.session_state.respondido:
         correcta = item['n'] if st.session_state.pregunta_tipo == "Nombre Común" else (item['s'] if st.session_state.pregunta_tipo == "Nombre Científico" else item['t'])
-        
         if st.session_state.ultimo_click == correcta:
-            st.success(f"✅ ¡Correcto! Es {correcta}")
+            st.success("Correcto")
         else:
-            st.error(f"❌ Incorrecto. La respuesta era: {correcta}")
+            st.error("Incorrecto. Era: " + correcta)
             
-        st.info(f"**
+        st.write("---")
+        st.write("Nombre: " + item['n'])
+        st.write("Científico: " + item['s'])
+        st.write("Tipo: " + item['t'])
+        st.write("Fruto: " + item['f'])
+        
+        if st.button("Siguiente Planta"):
+            st.session_state.indice += 1
+            st.session_state.opciones = []
+            st.rerun()
+else:
+    st.header("Fin del examen")
+    st.write("Puntuación Final: " + str(st.session_state.puntos))
+    if st.button("Reiniciar"):
+        st.session_state.clear()
+        st.rerun()
