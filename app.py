@@ -7,7 +7,7 @@ st.set_page_config(page_title="Mi Jardín Botánico", page_icon="🌿")
 
 # (La lista de plantas se mantiene igual que la anterior...)
 plantas = [
-    {"id": "1", "comun": "Níspero", "cient": "Eriobotrya japonica", "tipo": "Angiosperma", "extra": "Fruto: Pomo. Hoja: Perenne rugosa"},
+    {"id": "1", "comun": "Níspero", "cient": "Eriobotrya japonica", "tipo": "Angiosperma", "extra": "Fruto: Níspero. Hoja: Perenne rugosa"},
     {"id": "2", "comun": "Olivo", "cient": "Olea europaea", "tipo": "Angiosperma", "extra": "Fruto: Drupa (Aceituna). Hoja: Elíptica"},
     # ... pega aquí el resto de tus 33 plantas ...
     {"id": "33", "comun": "Madreselva", "cient": "Lonicera japonica", "tipo": "Angiosperma", "extra": "Trepadora perfumada tubular"}
@@ -66,3 +66,4 @@ else:
         st.session_state.puntos = 0
         random.shuffle(st.session_state.lista)
         st.rerun()
+
