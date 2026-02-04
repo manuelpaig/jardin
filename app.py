@@ -5,7 +5,7 @@ from PIL import Image, ImageOps
 
 st.set_page_config(page_title="Mi Jardín Botánico", page_icon="🌿")
 
-# BASE DE DATOS COMPLETA Y CORREGIDA (33 PLANTAS)
+# BASE DE DATOS COMPLETA Y REVISADA
 plantas = [
     {"id": "1", "comun": "Níspero", "cient": "Eriobotrya japonica", "tipo": "Angiosperma", "extra": "Fruto: Pomo. Hoja: Perenne rugosa"},
     {"id": "2", "comun": "Olivo", "cient": "Olea europaea", "tipo": "Angiosperma", "extra": "Fruto: Drupa (Aceituna). Hoja: Elíptica"},
@@ -27,15 +27,4 @@ plantas = [
     {"id": "18", "comun": "Flor de Pascua", "cient": "Euphorbia pulcherrima", "tipo": "Angiosperma", "extra": "Brácteas rojas llamativas"},
     {"id": "19", "comun": "Aloe Vera", "cient": "Aloe vera", "tipo": "Angiosperma", "extra": "Medicinal. Hoja suculenta con dientes"},
     {"id": "20", "comun": "Naranjo", "cient": "Citrus sinensis", "tipo": "Angiosperma", "extra": "Segundo ejemplar de naranjo"},
-    {"id": "21", "comun": "Cica", "cient": "Cycas revoluta", "tipo": "Gimnosperma", "extra": "Fósil viviente. Semillas desnudas"},
-    {"id": "22", "comun": "Cinta", "cient": "Chlorophytum comosum", "tipo": "Angiosperma", "extra": "Hojas estoloníferas (malamadre)"},
-    {"id": "23", "comun": "Costilla de Adán", "cient": "Monstera deliciosa", "tipo": "Angiosperma", "extra": "Hojas con agujeros (fenestraciones)"},
-    {"id": "24", "comun": "Hibisco", "cient": "Hibiscus rosa-sinensis", "tipo": "Angiosperma", "extra": "Flor con columna estaminal larga"},
-    {"id": "25", "comun": "Ficus caucho", "cient": "Ficus elastica", "tipo": "Angiosperma", "extra": "Hoja grande coriácea con látex"},
-    {"id": "26", "comun": "Buganvilla", "cient": "Bougainvillea glabra", "tipo": "Angiosperma", "extra": "Trepadora. Brácteas coloridas"},
-    {"id": "27", "comun": "Potus", "cient": "Epipremnum aureum", "tipo": "Angiosperma", "extra": "Liana de interior variegada"},
-    {"id": "28", "comun": "Sansevieria", "cient": "Dracaena trifasciata", "tipo": "Angiosperma", "extra": "Hoja espada vertical"},
-    {"id": "29", "comun": "Romero", "cient": "Salvia rosmarinus", "tipo": "Angiosperma", "extra": "Arbusto aromático lineal"},
-    {"id": "30", "comun": "Diente de león", "cient": "Taraxacum officinale", "tipo": "Angiosperma", "extra": "Inflorescencia amarilla (aquenio)"},
-    {"id": "31", "comun": "Árbol del cielo", "cient": "Ailanthus altissima", "tipo": "Angiosperma", "extra": "Hoja compuesta muy larga pinnada"},
-    {"id": "32", "comun": "Aligustre", "cient": "Ligustrum japonicum", "tipo
+    {"id": "21", "comun": "Cica", "cient": "Cycas
