@@ -5,7 +5,7 @@ from PIL import Image, ImageOps
 
 st.set_page_config(page_title="Mi Jardín Botánico", page_icon="🌿")
 
-# LISTA ACTUALIZADA: 32 AHORA ES AGROPYRON
+# LISTA ACTUALIZADA: 32 AHORA ES GRAMA
 plantas = [
     {"id": "1", "comun": "Níspero", "extra": "Fruto: Pomo. Hoja: Perenne rugosa"},
     {"id": "2", "comun": "Olivo", "extra": "Fruto: Aceituna. Hoja: Elíptica"},
@@ -38,7 +38,7 @@ plantas = [
     {"id": "29", "comun": "Romero", "extra": "Arbusto aromático lineal"},
     {"id": "30", "comun": "Diente de león", "extra": "Inflorescencia amarilla"},
     {"id": "31", "comun": "Árbol del cielo", "extra": "Hoja compuesta muy larga"},
-    {"id": "32", "comun": "Agropyron", "extra": "Gramínea. Inflorescencia en espiga"},
+    {"id": "32", "comun": "Grama", "extra": "Agropyron. Gramínea de crecimiento rastrero"},
     {"id": "33", "comun": "Trébol", "extra": "Hoja trifoliada. Leguminosa"}
 ]
 
@@ -63,7 +63,10 @@ if st.session_state.indice < len(st.session_state.lista):
         if st.form_submit_button("Comprobar"):
             st.session_state.respondido = True
             def cl(t): return t.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u")
-            if cl(rta) == cl(p['comun'].lower()):
+            # Aceptamos tanto 'grama' como 'agropyron' para la 32 por si acaso
+            es_grama = (p['id'] == "32" and cl(rta) == "agropyron")
+            
+            if cl(rta) == cl(p['comun'].lower()) or es_grama:
                 st.success(f"✅ ¡Correcto! Es {p['comun']}")
                 st.session_state.puntos += 1
             else: st.error(f"❌ Es {p['comun']}")
