@@ -6,7 +6,7 @@ from PIL import ImageOps
 
 st.set_page_config(page_title="Herbario")
 
-# Lista en formato vertical para que no se corte
+# 1. LISTA DE PLANTAS
 p_list = [
 {"id":"1","c":"Níspero","t":"Angiosperma","f":"Pomo"},
 {"id":"2","c":"Olivo","t":"Angiosperma","f":"Drupa"},
@@ -43,59 +43,59 @@ p_list = [
 {"id":"33","c":"Trébol","t":"Angiosperma","f":"Legumbre"}
 ]
 
+# 2. FUNCION LIMPIAR
 def limpiar(t):
     if not t:
         return ""
     t = t.lower()
-    a,e,i,o,u = "á","é","í","ó","ú"
-    t = t.replace(a,"a").replace(e,"e")
-    t = t.replace(i,"i").replace(o,"o")
-    t = t.replace(u,"u")
+    for a, b in zip("áéíóú", "aeiou"):
+        t = t.replace(a, b)
     return t
 
-if 'pts' not in st.session_state:
-    st.session_state.update({
-        'pts':0,
-        'idx':0,
-        'r':False,
-        'l':p_list.copy(),
-        'ur':'',
-        'li':-1
-    })
+# 3. INICIALIZACION (Aseguramos que 'ur' exista)
+if 'ur' not in st.session_state:
+    st.session_state.pts = 0
+    st.session_state.idx = 0
+    st.session_state.r = False
+    st.session_state.ur = ""
+    st.session_state.li = -1
+    st.session_state.l = p_list.copy()
     random.shuffle(st.session_state.l)
 
+# 4. JUEGO
 if st.session_state.idx < len(st.session_state.l):
     item = st.session_state.l[st.session_state.idx]
     st.title("Herbario")
+    st.write("Planta " + str(st.session_state.idx + 1) + " de 33")
     
-    # Imagen
     img_n = item['id'] + ".jpg.jpg"
     if os.path.exists(img_n):
         im = Image.open(img_n)
         st.image(ImageOps.exif_transpose(im))
     
-    # Formulario
     with st.form("f", clear_on_submit=True):
         txt = st.text_input("Nombre:")
-        btn = st.form_submit_button("Validar")
-        if btn:
+        if st.form_submit_button("Validar"):
             st.session_state.ur = txt
             st.session_state.r = True
+            st.rerun()
 
-    if st.session_state.r:
+    # Comprobación de seguridad para evitar el AttributeError
+    if st.session_state.r and 'ur' in st.session_state:
         r_u = limpiar(st.session_state.ur)
         r_c = limpiar(item['c'])
+        
         if r_u == r_c:
-            st.success("Correcto")
+            st.success("¡Correcto! Es " + item['c'])
             if st.session_state.li != st.session_state.idx:
                 st.session_state.pts += 1
                 st.session_state.li = st.session_state.idx
         else:
-            st.error("Es: " + item['c'])
+            st.error("Incorrecto. Es: " + item['c'])
         
-        # Info tecnica
         st.write("Tipo: " + item['t'])
         st.write("Fruto: " + item['f'])
+        st.write("Puntos: " + str(st.session_state.pts))
 
         if st.button("Siguiente"):
             st.session_state.r = False
@@ -105,5 +105,7 @@ if st.session_state.idx < len(st.session_state.l):
 else:
     st.write("Fin. Puntos: " + str(st.session_state.pts))
     if st.button("Reiniciar"):
-        st.session_state.update({'pts':0,'idx':0,'r':False})
+        st.session_state.pts = 0
+        st.session_state.idx = 0
+        st.session_state.r = False
         st.rerun()
