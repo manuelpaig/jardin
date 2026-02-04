@@ -4,7 +4,7 @@ from PIL import Image, ImageOps
 
 st.set_page_config(page_title="Herbario Botánico", page_icon="🌿")
 
-# BASE DE DATOS COMPLETA (1-33)
+# BASE DE DATOS COMPLETA Y CORREGIDA (1-33)
 p_list = [
     {"id":"1","c":"Níspero","t":"Angiosperma","f":"Pomo"},
     {"id":"2","c":"Olivo","t":"Angiosperma","f":"Drupa (Aceituna)"},
@@ -36,7 +36,7 @@ p_list = [
     {"id":"28","c":"Sansevieria","t":"Angiosperma","f":"Baya. Hoja vertical"},
     {"id":"29","c":"Romero","t":"Angiosperma","f":"Tetraquenio. Aromática"},
     {"id":"30","c":"Diente de león","t":"Angiosperma","f":"Cipsela (Vilano)"},
-    {"id":"31","c":"Árbol del cielo","t":"Angiosperma","f":"Sámara (ala central)"},
+    {"id":"31","c":"Naranjo","t":"Angiosperma","f":"Hesperidio (Ejemplar 3)"},
     {"id":"32","c":"Grama","t":"Angiosperma","f":"Cariópside (Gramínea)"},
     {"id":"33","c":"Trébol","t":"Angiosperma","f":"Legumbre (Trifoliada)"}
 ]
