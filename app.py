@@ -2,9 +2,9 @@ import streamlit as st
 import random, os
 from PIL import Image, ImageOps
 
-st.set_page_config(page_title="Herbario Botánico", page_icon="🌿")
+st.set_page_config(page_title="Herbario 33", page_icon="🌿")
 
-# LISTA FRAGMENTADA PARA EVITAR ERRORES DE LÍNEA LARGA
+# LISTA DEFINITIVA 1-33
 p_list = [
     {"id":"1","c":"Níspero","t":"Angiosperma","f":"Pomo"},
     {"id":"2","c":"Olivo","t":"Angiosperma","f":"Drupa"},
@@ -42,16 +42,14 @@ p_list = [
 ]
 
 def limpiar(t):
+    if not t: return ""
     t = t.lower()
-    t = t.replace("á","a")
-    t = t.replace("é","e")
-    t = t.replace("í","i")
-    t = t.replace("ó","o")
-    t = t.replace("ú","u")
+    t = t.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u")
     return t
 
+# Inicialización segura
 if 'pts' not in st.session_state:
-    st.session_state.update({'pts':0,'idx':0,'r':False,'l':p_list.copy(),'ur':''})
+    st.session_state.update({'pts':0,'idx':0,'r':False,'l':p_list.copy(),'ur':'','li':-1})
     random.shuffle(st.session_state.l)
 
 if st.session_state.idx < len(st.session_state.l):
@@ -64,31 +62,21 @@ if st.session_state.idx < len(st.session_state.l):
         st.image(ImageOps.exif_transpose(Image.open(img_path)), use_container_width=True)
     else: st.error(f"Falta: {img_path}")
 
+    # El formulario limpia el campo de texto al enviar
     with st.form("quiz", clear_on_submit=True):
         txt = st.text_input("¿Qué planta es?").strip().lower()
         if st.form_submit_button("Validar"):
             st.session_state.ur = txt
             st.session_state.r = True
 
+    # Solo comparamos si el usuario ha pulsado Validar
     if st.session_state.r:
         if limpiar(st.session_state.ur) == limpiar(item['c']):
-            st.success(f"✅ Correcto: {item['c']}")
-            if 'li' not in st.session_state or st.session_state.li != st.session_state.idx:
+            st.success(f"✅ ¡Correcto! Es {item['c']}")
+            if st.session_state.li != st.session_state.idx:
                 st.session_state.pts += 1
                 st.session_state.li = st.session_state.idx
         else:
-            st.error(f"❌ Es: {item['c']}")
+            st.error(f"❌ Incorrecto. Es {item['c']}")
         
-        st.info(f"🧬 {item['t']} | 🍎 {item['f']}")
-
-        if st.button("Siguiente ➡️"):
-            st.session_state.r = False
-            st.session_state.idx += 1
-            st.rerun()
-else:
-    st.balloons()
-    st.success(f"🏆 Fin: {st.session_state.pts}/33")
-    if st.button("Reiniciar"):
-        st.session_state.update({'pts':0,'idx':0,'r':False,'ur':''})
-        random.shuffle(st.session_state.l)
-        st.rerun()
+        st.info(f"🧬 **
