@@ -42,12 +42,12 @@ p_list = [
 ]
 
 if 'pts' not in st.session_state:
-    st.session_state.update({'pts': 0, 'idx': 0, 'r': False, 'l': p_list.copy()})
+    st.session_state.update({'pts': 0, 'idx': 0, 'r': False, 'l': p_list.copy(), 'ultima_rta': ''})
     random.shuffle(st.session_state.l)
 
 if st.session_state.idx < len(st.session_state.l):
     item = st.session_state.l[st.session_state.idx]
-    st.title("🌿 Examen Botánico")
+    st.title("🌿 Examen de Botánica")
     st.write(f"Planta {st.session_state.idx + 1}/33 | Puntos: {st.session_state.pts}")
 
     img_path = f"{item['id']}.jpg.jpg"
@@ -55,36 +55,32 @@ if st.session_state.idx < len(st.session_state.l):
         st.image(ImageOps.exif_transpose(Image.open(img_path)), use_container_width=True)
     else: st.error(f"Falta: {img_path}")
 
-    # clear_on_submit=True vacía el campo de texto tras pulsar el botón
     with st.form("quiz", clear_on_submit=True):
         txt = st.text_input("¿Qué planta es?").strip().lower()
-        sub = st.form_submit_button("Validar")
-        
-        if sub:
+        if st.form_submit_button("Validar"):
+            st.session_state.ultima_rta = txt
             st.session_state.r = True
-            st.session_state.ultima_rta = txt # Guardamos para comparar fuera del borrado
 
-    # Lógica de comprobación (usamos una variable temporal para la respuesta)
     if st.session_state.r:
         def cl(t): return t.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u")
         if cl(st.session_state.ultima_rta) == cl(item['c'].lower()):
             st.success(f"✅ ¡Correcto! Es {item['c']}")
-            if 'puntos_sumados' not in st.session_state or st.session_state.puntos_sumados != st.session_state.idx:
+            if 'last_idx_pts' not in st.session_state or st.session_state.last_idx_pts != st.session_state.idx:
                 st.session_state.pts += 1
-                st.session_state.puntos_sumados = st.session_state.idx
+                st.session_state.last_idx_pts = st.session_state.idx
         else:
             st.error(f"❌ Incorrecto. Es {item['c']}")
         
         st.info(f"🧬 **Tipo:** {item['t']}  \n🍎 **Fruto/Detalle:** {item['f']}")
 
-    if st.session_state.r and st.button("Siguiente ➡️"):
-        st.session_state.idx += 1
-        st.session_state.r = False
-        st.rerun()
+        if st.button("Siguiente Planta ➡️"):
+            st.session_state.r = False
+            st.session_state.idx += 1
+            st.rerun()
 else:
     st.balloons()
-    st.success(f"🏆 ¡Finalizado! {st.session_state.pts}/33")
+    st.success(f"🏆 ¡Finalizado! Puntos totales: {st.session_state.pts}/33")
     if st.button("Reiniciar"):
-        st.session_state.update({'pts': 0, 'idx': 0, 'r': False})
+        st.session_state.update({'pts': 0, 'idx': 0, 'r': False, 'ultima_rta': ''})
         random.shuffle(st.session_state.l)
         st.rerun()
